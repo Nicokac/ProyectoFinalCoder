@@ -22,6 +22,10 @@ class Vino(models.Model):
     tipo = models.CharField(max_length=100)
     sabor = models.CharField(max_length=100)
     intensidad = models.IntegerField()
+    abv = models.DecimalField(max_digits=4, decimal_places=2, default=0.0, verbose_name='Alcohol by Volume (%)')
+    ph = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, verbose_name='pH')
+    ta = models.DecimalField(max_digits=4, decimal_places=2, default=0.0, verbose_name='Total Acidity (g/L)')
+    rs = models.DecimalField(max_digits=4, decimal_places=2, default=0.0, verbose_name='Residual Sugar (g/L)')
 
     def __str__(self):
         return self.nombre
