@@ -1,25 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista Usuarios</title>
-</head>
-<body>
+{% extends 'padre.html' %}
 
-    Estos son nuestros usuarios:
 
-    <ul>
+{% block ContenidoQueCambia %}
 
-        
-        {% for usuarios in lista_usuarios  %}
-            <li>
-                {{usuarios.nombre}} - {{usuarios.apellido}} - {{usuarios.email}}
-            </li>
-        {% endfor %}
-            
+    <h1>Estos son nuestros Usuarios:</h1>
 
-    </ul>
+    {% for usuarios in lista_usuarios  %}
+    <li>
+        {{usuarios.nombre}} - {{usuarios.apellido}} - {{usuarios.email}}
+    </li>
+    {% endfor %}
+
     
-</body>
-</html>
+{% endblock ContenidoQueCambia %}
+
+
+
+
+    
