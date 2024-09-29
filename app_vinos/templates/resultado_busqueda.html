@@ -1,0 +1,19 @@
+{% extends 'padre.html' %}
+
+{% block ContenidoQueCambia %}
+
+    <p>Resultados de búsqueda para: "{{termino}}"</p>
+
+    <h3>Usuarios encontrados:</h3>
+
+    {% if usuarios %}
+        <ul>
+        {% for usuario in usuarios %}
+            <li>{{ usuario.nombre }} {{ usuario.apellido }} - {{ usuario.email }}</li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No se encontraron usuarios con el término "{{termino}}"</p>
+    {% endif %}
+
+{% endblock ContenidoQueCambia %}
