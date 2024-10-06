@@ -1,20 +1,17 @@
 {% extends 'padre.html' %}
 
-
 {% block ContenidoQueCambia %}
 
-
     <h1>Estos son nuestros vinos:</h1>
-
     <ul>
-
         {% for vinos in lista_vinos  %}
             <li>
                 {{vinos.nombre}} - {{vinos.tipo}} - {{vinos.sabor}} - {{vinos.intensidad}} - {{vinos.abv}} - {{vinos.ph}} - {{vinos.ta}} - {{vinos.rs}}
             </li>
         {% endfor %}
-
     </ul>
+    
+   <a href="{% url 'CargaVino' %}">Carga Vino</a:>
     
 {% endblock ContenidoQueCambia %}
     

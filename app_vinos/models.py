@@ -34,7 +34,7 @@ class Vino(models.Model):
     rs = models.DecimalField(max_digits=4, decimal_places=2, default=0.0, verbose_name='Residual Sugar (g/L)')
 
     def __str__(self):
-        return f'{self.nombre} {self.tipo} {self.sabor} {self.intensidad} {self.abv} {self.ta} {self.rs}' 
+        return f'{self.nombre} {self.tipo} {self.sabor} {self.intensidad} {self.abv} {self.ph} {self.ta} {self.rs}' 
     
     class Meta():
 

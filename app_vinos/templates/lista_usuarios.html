@@ -9,12 +9,15 @@
     <li>
         {{usuarios.nombre}} - {{usuarios.apellido}} - {{usuarios.email}}
     </li>
+    <div style="display: flex; column-gap: 5px;">
+        <form action="{% url 'EliminarUsuario' usuarios.id %}" method="post"> {% csrf_token %}
+            <button type="submit">Eliminar</button>
+        </form>
+        <button>
+            <a href="{% url 'EditarUsuario' usuarios.id %}">Editar</a>
+        </button>
+    </div>
     {% endfor %}
 
     
 {% endblock ContenidoQueCambia %}
-
-
-
-
-    
