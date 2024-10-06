@@ -4,6 +4,11 @@ from django.db.models import Q
 from .models import Usuario, Preferencia, Vino, Recomendacion
 from .forms import UsuarioFormulario, VinosFormulario
 
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import DeleteView, UpdateView, CreateView
+
+
 # Create your views here.
 
 def inicio(req):
@@ -158,11 +163,11 @@ def vino_formulario(req):
         return render(req, "vino_formulario.html", {"mi_formulario": mi_formulario})
 
 
-def lista_vinos(req):
+# def lista_vinos(req):
 
-    lista = Vino.objects.all()
+#     lista = Vino.objects.all()
 
-    return render(req, "lista_vinos.html", {"lista_vinos": lista})
+#     return render(req, "lista_vinos.html", {"lista_vinos": lista})
 
 def mostrar_preferencias(req):
 
@@ -171,3 +176,39 @@ def mostrar_preferencias(req):
 def mostrar_recomendaciones(req):
 
     return render(req, "recomendaciones.html", {})
+
+
+class VinoList(ListView):
+
+    model = Vino
+    template_name = 'vino_list.html'
+    context_object_name = 'vinos'
+
+class VinoDetails(DetailView):
+
+    model = Vino
+    template_name = 'vino_details.html'
+    context_object_name = 'vinos'
+
+class VinoCreate(CreateView):
+
+    model = Vino
+    template_name = 'vino_create.html'
+    #fields = ['nombre', 'tipo', 'sabor', 'intensidad', 'abv', 'ph', 'ta', 'rs']
+    fields = ('__all__')
+    success_url = '/app_vinos'
+
+class VinoUpdate(UpdateView):
+
+    model = Vino
+    template_name = 'vino_update.html'
+    fields = ('__all__')
+    success_url = '/app_vinos'
+    context_object_name = 'vinos'
+
+class VinoDelete(DeleteView):
+
+    model = Vino
+    template_name = 'vino_delete.html'
+    success_url = '/app_vinos'
+    context_object_name = 'vinos'

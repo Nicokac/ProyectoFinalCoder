@@ -1,0 +1,32 @@
+{% extends 'padre.html' %}
+
+
+{% block ContenidoQueCambia %}
+
+    <h1>Estos son nuestros Vinos:</h1>
+
+    <ul>
+
+        {% for vino in vinos  %}
+        <li>
+            <a href="{% url 'VinoDetalles' vino.id %}">
+                {{vino.nombre}}
+            </a>
+        </li>
+        <div style="display: flex; column-gap: 5px;">
+            <button>
+                <a href="{% url 'VinoBorrar' vino.id %}">Eliminar</a>
+            </button>
+            <button>
+                <a href="{% url 'VinoEditar' vino.id %}">Editar</a>
+            </button>
+        </div>
+        {% endfor %}
+
+    </ul>
+
+    <a href="{% url 'VinoCrear' %}">Carga Vino</a>
+    
+{% endblock ContenidoQueCambia %}
+
+    

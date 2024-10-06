@@ -7,7 +7,7 @@
 
     {% for usuarios in lista_usuarios  %}
     <li>
-        {{usuarios.nombre}} - {{usuarios.apellido}} - {{usuarios.email}}
+        {{usuarios}}
     </li>
     <div style="display: flex; column-gap: 5px;">
         <form action="{% url 'EliminarUsuario' usuarios.id %}" method="post"> {% csrf_token %}
@@ -19,5 +19,6 @@
     </div>
     {% endfor %}
 
+    <a href="{% url 'UsuarioFormulario' %}">Crear Usuario</a>
     
 {% endblock ContenidoQueCambia %}

@@ -1,0 +1,10 @@
+{% extends 'padre.html' %}
+
+
+{% block ContenidoQueCambia %}
+
+    <h1>Vista en detalle de nuestros Vinos:</h1>
+
+    <h3>Vino: {{vinos.nombre}} - Tipo: {{vinos.tipo}} - Sabor: {{vinos.sabor}} - Intensidad: {{vinos.intensidad}} - ABV: {{vinos.abv}} - PH: {{vinos.ph}} - TA: {{vinos.ta}} - RS: {{vinos.rs}}</h3>
+    
+{% endblock ContenidoQueCambia %}
