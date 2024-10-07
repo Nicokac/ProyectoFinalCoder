@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from .models import Usuario, Preferencia, Vino, Recomendacion
 from .forms import UsuarioFormulario, VinosFormulario
@@ -22,6 +26,7 @@ def crea_usuario(req, nombre, apellido, email):
 
     return HttpResponse(f"""<p> Nombre: {nuevo_usuario.nombre} - Apellido: {nuevo_usuario.apellido} - Email: {nuevo_usuario.email} creado con exito! </p>""")
 
+@login_required
 def lista_usuarios(req):
 
     lista = Usuario.objects.all()
@@ -178,7 +183,8 @@ def mostrar_recomendaciones(req):
     return render(req, "recomendaciones.html", {})
 
 
-class VinoList(ListView):
+
+class VinoList(LoginRequiredMixin, ListView):
 
     model = Vino
     template_name = 'vino_list.html'
@@ -212,3 +218,51 @@ class VinoDelete(DeleteView):
     template_name = 'vino_delete.html'
     success_url = '/app_vinos'
     context_object_name = 'vinos'
+
+def login_view(req):
+
+    if req.method == 'POST':
+        
+        mi_formulario = AuthenticationForm(req, data=req.POST)
+        if mi_formulario.is_valid():
+
+            data = mi_formulario.cleaned_data
+            usuario = data['username']
+            psw = data['password']
+
+            user = authenticate(username=usuario, password=psw)
+
+            if user:
+                login(req, user)
+                return render (req, "inicio.html", { "mensaje": f'Bienvenido {usuario}'})
+            else:
+                return render(req, "inicio.html", { "mensaje": f'Datos incorrectos'})
+
+        else:
+            return render(req, "login.html", { "mi_formulario": mi_formulario})
+        
+    else:
+        mi_formulario = AuthenticationForm()
+        return render(req, "login.html", { "mi_formulario": mi_formulario})
+    
+def register(req):
+
+    if req.method == 'POST':
+
+        mi_formulario = UserCreationForm(req.POST)
+        if mi_formulario.is_valid():
+
+            data = mi_formulario.cleaned_data
+            usuario = data['username']
+            mi_formulario.save()
+
+            return render(req, "inicio.html", { "mensaje": f'Usuario {usuario} creado exitosamente'})
+        
+        else:
+            return render(req, "registro.html", { "mi_formulario": mi_formulario})
+        
+    else:
+
+        mi_formulario = UserCreationForm()
+        return render(req, "registro.html", { "mi_formulario": mi_formulario})
+    

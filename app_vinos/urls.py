@@ -1,9 +1,10 @@
 from django.urls import path
 #from .views import inicio, crea_usuario ,lista_usuarios, lista_vinos, mostrar_preferencias, mostrar_recomendaciones, usuario_formulario, busqueda_usuario, buscar_usuario, vino_formulario, eliminar_usuario, editar_usuario, 
 from .views import *
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
-    path('', inicio),
+    path('', inicio, name="Inicio"),
     path('crear_usuario/<nombre>/<apellido>/<email>', crea_usuario),
     #path('cargar_vino/<nombre>/<tipo>/<sabor>/<intensidad>/<abv>/<ph>/<ta>/<rs>', cargar_vino),
     path('cargar_vino/', vino_formulario, name="CargaVino"),
@@ -22,4 +23,9 @@ urlpatterns = [
     path('vino_crear/', VinoCreate.as_view(), name="VinoCrear"),
     path('vino_editar/<pk>', VinoUpdate.as_view(), name="VinoEditar"),
     path('vino_borrar/<pk>', VinoDelete.as_view(), name="VinoBorrar"),
+
+    path('login/', login_view, name="Login"),
+    path('registrar/', register, name="Registrar"),
+    path('logout/', LogoutView.as_view(template_name = "logout.html"), name="Logout"),
+
 ]
