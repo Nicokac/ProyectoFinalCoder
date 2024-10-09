@@ -30,5 +30,7 @@ urlpatterns = [
 
     path('editar-perfil/', editar_perfil, name="EditarPerfil"),
 
+    path('agregar-avatar/', agregar_avatar, name="AgregarAvatar"),
+
 
 ]

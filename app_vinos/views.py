@@ -5,8 +5,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
-from .models import Usuario, Preferencia, Vino, Recomendacion
-from .forms import UsuarioFormulario, VinosFormulario, UserEditForm
+from .models import Usuario, Preferencia, Vino, Recomendacion, Avatar
+from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario
 
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -17,7 +17,15 @@ from django.views.generic.edit import DeleteView, UpdateView, CreateView
 
 def inicio(req):
 
-    return render(req, "inicio.html", {})
+    try:
+
+        avatar = Avatar.objects.get(user=req.user.id)
+        return render(req, "inicio.html", {'url': avatar.imagen.url})
+
+    except:
+        return render(req, "inicio.html", {})
+
+
 
 def crea_usuario(req, nombre, apellido, email):
 
@@ -293,4 +301,23 @@ def editar_perfil(req):
         mi_formulario = UserEditForm(instance = req.user)
         return render(req, "editar_perfil.html", { "mi_formulario": mi_formulario})
     
+def agregar_avatar(req):
 
+    if req.method == 'POST':
+
+        mi_formulario = AvatarFormulario(req.POST, req.FILES)
+        if mi_formulario.is_valid():
+
+            data = mi_formulario.cleaned_data
+            avatar = Avatar(user=req.user, imagen=data["imagen"])
+            avatar.save()
+
+            return render(req, "inicio.html", { "mensaje": f'Avatar creado correctamente'})
+        
+        else:
+            return render(req, "agregar_avatar.html", { "mi_formulario": mi_formulario})
+    
+    else:
+
+        mi_formulario = AvatarFormulario()
+        return render(req, "agregar_avatar.html", { "mi_formulario": mi_formulario})

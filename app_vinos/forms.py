@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
-from .models import Usuario, Vino
+from .models import Usuario, Vino, Avatar
 
 # class UsuarioFormulario(forms.Form):
 
@@ -67,3 +67,9 @@ class UserEditForm(UserChangeForm):
         
         else:
             return password2
+        
+class AvatarFormulario(forms.ModelForm):
+
+    class Meta:
+        model = Avatar
+        fields=('imagen',)

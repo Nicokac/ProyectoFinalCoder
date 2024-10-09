@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Usuario(models.Model):
@@ -50,6 +51,11 @@ class Recomendacion(models.Model):
 
     def __str__(self):
         return f'Recomendación para {self.usuario.nombre} - {self.vino.nombre}'
+    
+class Avatar(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to='avatares', blank=True, null=True)
     
     
     
