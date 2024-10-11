@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.db import IntegrityError
 from .models import Usuario, Preferencia, Vino, Recomendacion, Avatar
-from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario, CataForm
+from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario, CataForm, CustomUserCreationForm
 
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -14,7 +15,6 @@ from django.views.generic.edit import DeleteView, UpdateView, CreateView
 
 
 # Create your views here.
-
 def inicio(req):
 
     try:
@@ -253,26 +253,86 @@ def login_view(req):
         mi_formulario = AuthenticationForm()
         return render(req, "login.html", { "mi_formulario": mi_formulario})
     
-def register(req):
+# def register(req):
 
-    if req.method == 'POST':
+#     if req.method == 'POST':
 
-        mi_formulario = UserCreationForm(req.POST)
-        if mi_formulario.is_valid():
+#         mi_formulario = UserCreationForm(req.POST)
+#         if mi_formulario.is_valid():
 
-            data = mi_formulario.cleaned_data
-            usuario = data['username']
-            mi_formulario.save()
+#             data = mi_formulario.cleaned_data
+#             usuario = data['username']
+#             mi_formulario.save()
 
-            return render(req, "inicio.html", { "mensaje": f'Usuario {usuario} creado exitosamente'})
+#             return render(req, "inicio.html", { "mensaje": f'Usuario {usuario} creado exitosamente'})
         
+#         else:
+#             return render(req, "registro.html", { "mi_formulario": mi_formulario})
+        
+#     else:
+
+#         mi_formulario = UserCreationForm()
+#         return render(req, "registro.html", { "mi_formulario": mi_formulario})
+
+# def register(req):
+#     if req.method == 'POST':
+#         mi_formulario = CustomUserCreationForm(req.POST)
+#         if mi_formulario.is_valid():
+#             user = mi_formulario.save(commit=False)  # No guardar aún, porque falta completar los datos adicionales
+#             user.first_name = mi_formulario.cleaned_data['first_name']
+#             user.last_name = mi_formulario.cleaned_data['last_name']
+#             user.email = mi_formulario.cleaned_data['email']
+#             user.save()  # Ahora guardamos todo
+
+#             return render(req, "inicio.html", { "mensaje": f'Usuario {user.username} creado exitosamente'})
+        
+#         else:
+#             return render(req, "registro.html", { "mi_formulario": mi_formulario})
+        
+#     else:
+#         mi_formulario = CustomUserCreationForm()  # Usar el nuevo formulario personalizado
+#         return render(req, "registro.html", { "mi_formulario": mi_formulario})
+
+def register(req):
+    if req.method == 'POST':
+        mi_formulario = CustomUserCreationForm(req.POST)
+        if mi_formulario.is_valid():
+            user = mi_formulario.save(commit=False)
+            user.first_name = mi_formulario.cleaned_data['first_name']
+            user.last_name = mi_formulario.cleaned_data['last_name']
+            user.email = mi_formulario.cleaned_data['email']
+            user.save()
+
+            # Verificar si ya existe un registro en el modelo Usuario para este User
+            try:
+                usuario, created = Usuario.objects.get_or_create(
+                    user=user,
+                    defaults={
+                        'nombre': user.first_name,
+                        'apellido': user.last_name,
+                        'email': user.email
+                    }
+                )
+
+                if not created:
+                    # Si ya existía el registro, podemos actualizar los datos si es necesario
+                    usuario.nombre = user.first_name
+                    usuario.apellido = user.last_name
+                    usuario.email = user.email
+                    usuario.save()
+
+            except IntegrityError:
+                return render(req, "inicio.html", {"mensaje": "Error: el usuario ya existe."})
+
+            return render(req, "inicio.html", { "mensaje": f'Usuario {user.username} creado exitosamente'})
+
         else:
             return render(req, "registro.html", { "mi_formulario": mi_formulario})
-        
-    else:
 
-        mi_formulario = UserCreationForm()
+    else:
+        mi_formulario = CustomUserCreationForm()
         return render(req, "registro.html", { "mi_formulario": mi_formulario})
+
     
 @login_required
 def editar_perfil(req):
@@ -328,27 +388,29 @@ def agendar_cata(req):
     if req.method == 'POST':
 
         mi_formulario = CataForm(req.POST)
+
         if mi_formulario.is_valid():
 
             cata = mi_formulario.save(commit=False)
             try:
-
-                cata.usuario = Usuario.objects.get(email=req.user.email)
-            except:
+                # Asignar el usuario actual logueado utilizando la relación OneToOne
+                cata.usuario = req.user.usuario  # Django permite acceder al modelo relacionado OneToOne con este patrón.
+            except Usuario.DoesNotExist:
                 return render(req, "inicio.html", {"mensaje": "Usuario no encontrado. Por favor, regístrate en el sistema."})
+            
             cata.save()
-            mi_formulario.save_m2m() #Para guardar la relación ManyToMany
-            #return redirect('cata_detalle', cata.id)
-            #return HttpResponseRedirect('cata_detalle', cata.id)
+            mi_formulario.save_m2m()  # Guardar la relación ManyToMany (vinos seleccionados)
 
-            return render(req, "inicio.html", { "mensaje": f'Datos actualizados exitosamente'})
-
+            return render(req, "inicio.html", {"mensaje": "Cata agendada exitosamente"})
         else:
-            mi_formulario = CataForm()
-
-        return render(req, 'agendar_cata.html', {'mi_formulario': mi_formulario})
+            return render(req, 'agendar_cata.html', {'mi_formulario': mi_formulario, 'mensaje': 'Por favor, corrige los errores en el formulario.'})
 
     else:
-
         mi_formulario = CataForm()
-        return render(req, "agendar_cata.html", { "mi_formulario": mi_formulario})
+
+    return render(req, "agendar_cata.html", {"mi_formulario": mi_formulario})
+
+@login_required
+def detalle_cata(req):
+
+    return render(req, "detalle_cata.html", {})

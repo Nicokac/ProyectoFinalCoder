@@ -32,6 +32,8 @@ urlpatterns = [
 
     path('agregar-avatar/', agregar_avatar, name="AgregarAvatar"),
 
-    path('agendar_cata/', agendar_cata, name='AgendarCata')
+    path('agendar_cata/', agendar_cata, name='AgendarCata'),
+
+    path('detalle_cata/', detalle_cata, name='DetalleCata'),
 
 ]

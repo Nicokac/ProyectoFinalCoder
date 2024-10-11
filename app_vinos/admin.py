@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Usuario, Vino, Preferencia, Recomendacion, Avatar
+from .models import Usuario, Vino, Preferencia, Recomendacion, Avatar, Cata
 
 class UsuarioAdmin(admin.ModelAdmin):
 
@@ -19,4 +19,5 @@ admin.site.register(Vino, VinoAdmin)
 admin.site.register(Preferencia)
 admin.site.register(Recomendacion)
 admin.site.register(Avatar)
+admin.site.register(Cata)
 

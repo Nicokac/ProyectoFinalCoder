@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.forms import UserChangeForm, UserCreationForm
 from django.contrib.auth.models import User
 from .models import Usuario, Vino, Avatar, Cata
 
@@ -22,17 +22,6 @@ class UsuarioFormulario(forms.ModelForm):
                 }
             )
         }
-
-# class VinosFormulario(forms.Form):
-
-#     nombre = forms.CharField() 
-#     tipo = forms.CharField()
-#     sabor = forms.CharField()
-#     intensidad = forms.CharField()
-#     abv = forms.DecimalField()
-#     ph = forms.DecimalField()
-#     ta = forms.DecimalField()
-#     rs = forms.DecimalField()  
 
 class VinosFormulario(forms.ModelForm):
 
@@ -84,3 +73,12 @@ class AvatarFormulario(forms.ModelForm):
     class Meta:
         model = Avatar
         fields=('imagen',)
+
+class CustomUserCreationForm(UserCreationForm):
+    first_name = forms.CharField(max_length=30, required=True, help_text='Nombre')
+    last_name = forms.CharField(max_length=30, required=True, help_text='Apellido')
+    email = forms.EmailField(max_length=254, required=True, help_text='Correo electrónico')
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
