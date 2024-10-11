@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from .models import Usuario, Preferencia, Vino, Recomendacion, Avatar
-from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario
+from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario, CataForm
 
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -321,3 +321,34 @@ def agregar_avatar(req):
 
         mi_formulario = AvatarFormulario()
         return render(req, "agregar_avatar.html", { "mi_formulario": mi_formulario})
+
+@login_required    
+def agendar_cata(req):
+
+    if req.method == 'POST':
+
+        mi_formulario = CataForm(req.POST)
+        if mi_formulario.is_valid():
+
+            cata = mi_formulario.save(commit=False)
+            try:
+
+                cata.usuario = Usuario.objects.get(email=req.user.email)
+            except:
+                return render(req, "inicio.html", {"mensaje": "Usuario no encontrado. Por favor, regístrate en el sistema."})
+            cata.save()
+            mi_formulario.save_m2m() #Para guardar la relación ManyToMany
+            #return redirect('cata_detalle', cata.id)
+            #return HttpResponseRedirect('cata_detalle', cata.id)
+
+            return render(req, "inicio.html", { "mensaje": f'Datos actualizados exitosamente'})
+
+        else:
+            mi_formulario = CataForm()
+
+        return render(req, 'agendar_cata.html', {'mi_formulario': mi_formulario})
+
+    else:
+
+        mi_formulario = CataForm()
+        return render(req, "agendar_cata.html", { "mi_formulario": mi_formulario})

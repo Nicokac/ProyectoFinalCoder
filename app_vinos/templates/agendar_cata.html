@@ -1,0 +1,13 @@
+{% extends 'padre.html' %}
+
+
+{% block ContenidoQueCambia %}
+
+
+    <h2>Agendar una Cata</h2>
+        <form method="POST"> {% csrf_token %}
+            {{ mi_formulario.as_p }}
+    <button type="submit">Agendar Cata {{usuario.nombre}}</button>
+    </form>
+
+{% endblock ContenidoQueCambia %}

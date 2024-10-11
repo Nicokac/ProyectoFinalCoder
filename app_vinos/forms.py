@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
-from .models import Usuario, Vino, Avatar
+from .models import Usuario, Vino, Avatar, Cata
 
 # class UsuarioFormulario(forms.Form):
 
@@ -67,6 +67,17 @@ class UserEditForm(UserChangeForm):
         
         else:
             return password2
+        
+class CataForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Cata
+        fields = ['fecha', 'vinos', 'comentarios']
+        widgets = {
+            'fecha': forms.DateInput(attrs={'type': 'date'}),
+            'vino': forms.CheckboxSelectMultiple(),
+        }
         
 class AvatarFormulario(forms.ModelForm):
 
