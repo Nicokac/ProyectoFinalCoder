@@ -1,0 +1,29 @@
+{% extends 'padre.html' %}
+
+{% block ContenidoQueCambia %}
+    <h1>Verificación de relación entre User y Usuario</h1>
+
+    <ul>
+        {% for usuario in usuarios %}
+            <!-- Aquí agregamos la verificación de si es administrador o cliente -->
+            {% if usuario.es_administrador %}
+                <p>Este usuario es un administrador.</p>
+            {% elif usuario.es_cliente %}
+                <p>Este usuario es un cliente.</p>
+            {% endif %}
+
+            <li>
+                Nombre: {{ usuario.nombre }} {{ usuario.apellido }} - Email: {{ usuario.email }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Información Adicional</h2>
+    <ul>
+        {% for item in resultado %}
+            <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+

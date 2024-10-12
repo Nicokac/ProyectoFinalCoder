@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
+from django.contrib.auth.models import User
 from django.db import IntegrityError
 from .models import Usuario, Preferencia, Vino, Recomendacion, Avatar
 from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario, CataForm, CustomUserCreationForm
@@ -400,8 +401,8 @@ def agendar_cata(req):
             
             cata.save()
             mi_formulario.save_m2m()  # Guardar la relación ManyToMany (vinos seleccionados)
-
-            return render(req, "inicio.html", {"mensaje": "Cata agendada exitosamente"})
+            return redirect('DetalleCata', cata_id=cata.id)
+            #return render(req, "inicio.html", {"mensaje": "Cata agendada exitosamente"})
         else:
             return render(req, 'agendar_cata.html', {'mi_formulario': mi_formulario, 'mensaje': 'Por favor, corrige los errores en el formulario.'})
 
@@ -414,3 +415,24 @@ def agendar_cata(req):
 def detalle_cata(req):
 
     return render(req, "detalle_cata.html", {})
+
+def verificar_relacion_usuario(req):
+    usuarios = Usuario.objects.select_related('user').all()  # Carga todos los usuarios
+    resultado = []
+
+    for user in User.objects.all():
+        try:
+            usuario = user.usuario
+            resultado.append(f'User ID: {user.id}, Usuario ID: {usuario.id}, Nombre: {user.first_name}, Apellido: {user.last_name}, Email: {user.email}')
+        except Usuario.DoesNotExist:
+            resultado.append(f'User {user.username} no tiene un perfil de Usuario asociado.')
+
+    return render(req, "verificar_relacion.html", {"usuarios": usuarios, "resultado": resultado})
+
+def vista_usuario(request, usuario_id):
+    usuario = Usuario.objects.get(id=usuario_id)
+    
+    if usuario.es_administrador:
+        return HttpResponse("Este usuario es un administrador")
+    elif usuario.es_cliente:
+        return HttpResponse("Este usuario es un cliente")

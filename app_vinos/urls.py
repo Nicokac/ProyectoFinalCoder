@@ -36,4 +36,6 @@ urlpatterns = [
 
     path('detalle_cata/', detalle_cata, name='DetalleCata'),
 
+    path('verificar_relacion/', verificar_relacion_usuario, name='VerificarRelacion'),
+
 ]

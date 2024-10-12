@@ -1,14 +1,21 @@
 {% extends 'padre.html' %}
 
-
 {% block ContenidoQueCambia %}
 
     <h1>Estos son nuestros Usuarios:</h1>
 
-    {% for usuarios in lista_usuarios  %}
+    {% for usuarios in lista_usuarios %}
     <li>
-        {{usuarios}}
+        {{ usuarios }}
     </li>
+
+    <!-- Aquí agregamos la verificación de si es administrador o cliente -->
+    {% if usuarios.es_administrador %}
+        <p>Este usuario es un administrador.</p>
+    {% elif usuarios.es_cliente %}
+        <p>Este usuario es un cliente.</p>
+    {% endif %}
+
     <div style="display: flex; column-gap: 5px;">
         <form action="{% url 'EliminarUsuario' usuarios.id %}" method="post"> {% csrf_token %}
             <button type="submit">Eliminar</button>
@@ -22,3 +29,4 @@
     <a href="{% url 'UsuarioFormulario' %}">Crear Usuario</a>
     
 {% endblock ContenidoQueCambia %}
+

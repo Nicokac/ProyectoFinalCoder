@@ -8,3 +8,7 @@ def create_usuario(sender, instance, created, **kwargs):
     if created:
         # Crear el objeto Usuario asociado al User recién creado
         Usuario.objects.create(user=instance, email=instance.email, nombre=instance.first_name, apellido=instance.last_name)
+
+@receiver(post_save, sender=User)
+def guardar_perfil_usuario(sender, instance, **kwargs):
+    instance.usuario.save()

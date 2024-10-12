@@ -3,16 +3,23 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Usuario(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True) # Relación OneToOne con el modelo User
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  # Relación OneToOne con el modelo User
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     email = models.EmailField()
 
     def __str__(self):
-        return f'{self.nombre} {self.apellido} {self.email}'
+        return f'{self.nombre} {self.apellido} ({self.user.username})'
     
-    class Meta():
+    @property
+    def es_administrador(self):
+        return self.user.is_staff  # Verifica si el usuario tiene estado de staff
 
+    @property
+    def es_cliente(self):
+        return not self.user.is_staff  # Cliente si no es staff
+
+    class Meta:
         verbose_name = 'Usuarios'
         verbose_name_plural = 'Mis usuarios'
         ordering = ('nombre',)
