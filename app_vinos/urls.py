@@ -1,5 +1,4 @@
-from django.urls import path
-#from .views import inicio, crea_usuario ,lista_usuarios, lista_vinos, mostrar_preferencias, mostrar_recomendaciones, usuario_formulario, busqueda_usuario, buscar_usuario, vino_formulario, eliminar_usuario, editar_usuario, 
+from django.urls import path 
 from .views import *
 from django.contrib.auth.views import LogoutView
 

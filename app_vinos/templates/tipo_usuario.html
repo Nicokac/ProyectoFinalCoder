@@ -1,0 +1,5 @@
+{% if usuario.es_administrador %}
+    <p>Este usuario es un administrador.</p>
+{% elif usuario.es_cliente %}
+    <p>Este usuario es un cliente.</p>
+{% endif %}

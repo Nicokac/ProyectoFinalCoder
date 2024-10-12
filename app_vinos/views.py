@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
 from django.contrib.auth import authenticate, login, logout
@@ -7,26 +7,28 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from .models import Usuario, Preferencia, Vino, Recomendacion, Avatar
+from .models import Usuario, Preferencia, Vino, Recomendacion, Avatar, Cata
 from .forms import UsuarioFormulario, VinosFormulario, UserEditForm, AvatarFormulario, CataForm, CustomUserCreationForm
 
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView, UpdateView, CreateView
 
-
 # Create your views here.
+@login_required
 def inicio(req):
-
     try:
-
+        # Obtener la última cata agendada por el usuario logueado
+        cata = Cata.objects.filter(usuario=req.user.usuario).last()
         avatar = Avatar.objects.get(user=req.user.id)
-        return render(req, "inicio.html", {'url': avatar.imagen.url})
-
+        return render(req, "inicio.html", {'url': avatar.imagen.url, 'cata': cata})
+    except Avatar.DoesNotExist:
+        # Si no tiene avatar, pero sí una cata
+        cata = Cata.objects.filter(usuario=req.user.usuario).last()
+        return render(req, "inicio.html", {'cata': cata})
     except:
+        # Si ocurre otro error, retornar sin avatar ni cata
         return render(req, "inicio.html", {})
-
-
 
 def crea_usuario(req, nombre, apellido, email):
 
@@ -135,16 +137,6 @@ def editar_usuario(req, id):
             "email": usuario.email,
         }) 
         return render(req, "editar_usuario.html", {"mi_formulario": mi_formulario, "id": usuario.id})
-    
-
-# def cargar_vino(req, nombre, tipo, sabor, intensidad, abv, ph, ta, rs):
-
-#     nuevo_vino = Vino(nombre=nombre, tipo=tipo, sabor=sabor, intensidad=intensidad, abv=abv, ph=ph, ta=ta, rs=rs)
-#     nuevo_vino.save()
-
-#     return HttpResponse(f"""<p> Nombre: {nuevo_vino.nombre} - Tipo: {nuevo_vino.tipo} - Sabor: {nuevo_vino.sabor} 
-#                         - Intensidad: {nuevo_vino.intensidad} - ABV: {nuevo_vino.abv} - pH: {nuevo_vino.ph} - ta: {nuevo_vino.ta} - rs: {nuevo_vino.rs} cargado con exito! </p>""")
-
 
 def vino_formulario(req):
 
@@ -176,13 +168,6 @@ def vino_formulario(req):
         mi_formulario = VinosFormulario() 
         return render(req, "vino_formulario.html", {"mi_formulario": mi_formulario})
 
-
-# def lista_vinos(req):
-
-#     lista = Vino.objects.all()
-
-#     return render(req, "lista_vinos.html", {"lista_vinos": lista})
-
 def mostrar_preferencias(req):
 
     return render(req, "preferencias.html", {})
@@ -190,8 +175,6 @@ def mostrar_preferencias(req):
 def mostrar_recomendaciones(req):
 
     return render(req, "recomendaciones.html", {})
-
-
 
 class VinoList(LoginRequiredMixin, ListView):
 
@@ -253,46 +236,6 @@ def login_view(req):
     else:
         mi_formulario = AuthenticationForm()
         return render(req, "login.html", { "mi_formulario": mi_formulario})
-    
-# def register(req):
-
-#     if req.method == 'POST':
-
-#         mi_formulario = UserCreationForm(req.POST)
-#         if mi_formulario.is_valid():
-
-#             data = mi_formulario.cleaned_data
-#             usuario = data['username']
-#             mi_formulario.save()
-
-#             return render(req, "inicio.html", { "mensaje": f'Usuario {usuario} creado exitosamente'})
-        
-#         else:
-#             return render(req, "registro.html", { "mi_formulario": mi_formulario})
-        
-#     else:
-
-#         mi_formulario = UserCreationForm()
-#         return render(req, "registro.html", { "mi_formulario": mi_formulario})
-
-# def register(req):
-#     if req.method == 'POST':
-#         mi_formulario = CustomUserCreationForm(req.POST)
-#         if mi_formulario.is_valid():
-#             user = mi_formulario.save(commit=False)  # No guardar aún, porque falta completar los datos adicionales
-#             user.first_name = mi_formulario.cleaned_data['first_name']
-#             user.last_name = mi_formulario.cleaned_data['last_name']
-#             user.email = mi_formulario.cleaned_data['email']
-#             user.save()  # Ahora guardamos todo
-
-#             return render(req, "inicio.html", { "mensaje": f'Usuario {user.username} creado exitosamente'})
-        
-#         else:
-#             return render(req, "registro.html", { "mi_formulario": mi_formulario})
-        
-#     else:
-#         mi_formulario = CustomUserCreationForm()  # Usar el nuevo formulario personalizado
-#         return render(req, "registro.html", { "mi_formulario": mi_formulario})
 
 def register(req):
     if req.method == 'POST':
@@ -334,7 +277,6 @@ def register(req):
         mi_formulario = CustomUserCreationForm()
         return render(req, "registro.html", { "mi_formulario": mi_formulario})
 
-    
 @login_required
 def editar_perfil(req):
 
@@ -383,29 +325,21 @@ def agregar_avatar(req):
         mi_formulario = AvatarFormulario()
         return render(req, "agregar_avatar.html", { "mi_formulario": mi_formulario})
 
-@login_required    
+@login_required
 def agendar_cata(req):
-
     if req.method == 'POST':
-
         mi_formulario = CataForm(req.POST)
-
         if mi_formulario.is_valid():
-
             cata = mi_formulario.save(commit=False)
             try:
                 # Asignar el usuario actual logueado utilizando la relación OneToOne
-                cata.usuario = req.user.usuario  # Django permite acceder al modelo relacionado OneToOne con este patrón.
+                cata.usuario = req.user.usuario  # Aquí se asigna el usuario correcto
             except Usuario.DoesNotExist:
                 return render(req, "inicio.html", {"mensaje": "Usuario no encontrado. Por favor, regístrate en el sistema."})
-            
             cata.save()
             mi_formulario.save_m2m()  # Guardar la relación ManyToMany (vinos seleccionados)
-            return redirect('DetalleCata', cata_id=cata.id)
-            #return render(req, "inicio.html", {"mensaje": "Cata agendada exitosamente"})
-        else:
-            return render(req, 'agendar_cata.html', {'mi_formulario': mi_formulario, 'mensaje': 'Por favor, corrige los errores en el formulario.'})
-
+            #return redirect('DetalleCata', cata_id=cata.id)
+            return render(req, "inicio.html", {"mensaje": "La cata ha sido agendada correctamente"})
     else:
         mi_formulario = CataForm()
 
@@ -413,8 +347,11 @@ def agendar_cata(req):
 
 @login_required
 def detalle_cata(req):
+    # Obtener todas las catas del usuario actual
+    catas = Cata.objects.filter(usuario=req.user.usuario)
 
-    return render(req, "detalle_cata.html", {})
+    # Pasar todas las catas al template
+    return render(req, "detalle_cata.html", {'catas': catas})
 
 def verificar_relacion_usuario(req):
     usuarios = Usuario.objects.select_related('user').all()  # Carga todos los usuarios

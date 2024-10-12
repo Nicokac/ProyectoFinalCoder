@@ -1,10 +1,27 @@
 {% extends 'padre.html' %}
 
 {% block ContenidoQueCambia %}
+    <h1>Detalles de las Catas</h1>
 
-    <form action="{% url 'DetalleCata' %}" method="get">
-        
-        <h2>Detalles Cata</h2>
+    {% if catas.exists %}
+        {% for cata in catas %}
+            <h2>Cata del {{ cata.fecha }}</h2>
+            <p><strong>Cliente:</strong> {{ cata.usuario.nombre }} {{ cata.usuario.apellido }}</p>
 
-    </form>
-{% endblock ContenidoQueCambia %}
+            <h3>Vinos seleccionados:</h3>
+            <ul>
+                {% for vino in cata.vinos.all %}
+                    <li>{{ vino.nombre }} - {{ vino.tipo }} - Sabor: {{ vino.sabor }} - ABV: {{ vino.abv }}</li>
+                {% endfor %}
+            </ul>
+
+            {% if cata.comentarios %}
+                <h4>Comentarios adicionales:</h4>
+                <p>{{ cata.comentarios }}</p>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>No tienes catas agendadas.</p>
+    {% endif %}
+
+{% endblock %}

@@ -13,6 +13,9 @@
                 {{vino.nombre}}
             </a>
         </li>
+        
+        {% if user.is_staff %}
+
         <div style="display: flex; column-gap: 5px;">
             <button>
                 <a href="{% url 'VinoBorrar' vino.id %}">Eliminar</a>
@@ -21,12 +24,19 @@
                 <a href="{% url 'VinoEditar' vino.id %}">Editar</a>
             </button>
         </div>
+        
+        {% endif %}
+            
         {% endfor %}
 
     </ul>
-
-    <a href="{% url 'VinoCrear' %}">Carga Vino</a>
     
+    {% if user.is_staff %}
+    
+    <a href="{% url 'VinoCrear' %}">Carga Vino</a>
+        
+    {% endif %}
+        
 {% endblock ContenidoQueCambia %}
 
     
