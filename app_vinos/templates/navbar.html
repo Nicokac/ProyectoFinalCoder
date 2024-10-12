@@ -4,18 +4,22 @@
             <a class="navbar-brand" href="{% url 'Inicio' %}">Inicio</a>                    
         </div>
         
-        {% if user.is_staff %}
-        
-        <a class="navbar-brand" href="{% url 'ListaUsuarios' %}">Usuario</a>
-            
-        {% endif %}
-            
+        <!-- El enlace de Vinos siempre estará disponible -->
         <a class="navbar-brand" href="{% url 'VinoLista' %}">Vinos</a>
-        <a class="navbar-brand" href="{% url 'AgendarCata' %}">Agendar Cata</a>
+        <a class="navbar-brand" href="{% url 'DescriptivoTiposCata' %}">Tipos de Cata</a>
 
-        <!-- Enlace fijo para ver detalles de las catas -->
-        <a class="navbar-brand" href="{% url 'DetalleCata' %}">Detalles de la cata</a>
-
+        <!-- Solo para usuarios autenticados y no administradores -->
+        {% if user.is_authenticated and not user.is_staff %}
+            <a class="navbar-brand" href="{% url 'AgendarCata' %}">Agendar Cata</a>
+            <a class="navbar-brand" href="{% url 'DetalleCata' %}">Detalles de la cata</a>
+        {% endif %}
+        
+        <!-- Solo para administradores -->
+        {% if user.is_staff %}
+            <a class="navbar-brand" href="{% url 'ListaUsuarios' %}">Usuarios</a>
+            <a class="navbar-brand" href="{% url 'TodasLasCatas' %}">Catas Reservadas</a>
+        {% endif %}
+        
         {% if user.is_authenticated %}
             {% if url %}
                 <img src="{{url}}" height="30px" alt="avatar">

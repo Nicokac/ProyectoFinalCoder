@@ -37,4 +37,7 @@ urlpatterns = [
 
     path('verificar_relacion/', verificar_relacion_usuario, name='VerificarRelacion'),
 
+    path('todas_las_catas/', ver_todas_las_catas, name='TodasLasCatas'),
+    path('eliminar_cata/<int:cata_id>/', eliminar_cata, name='EliminarCata'),
+    path('descriptivo_tipos_cata/', descriptivo_tipos_cata, name='DescriptivoTiposCata'),
 ]

@@ -1,0 +1,36 @@
+{% extends 'padre.html' %}
+
+{% block ContenidoQueCambia %}
+    <h1>Detalles de todas las Catas</h1>
+
+    {% if catas %}
+        <ul>
+        {% for cata in catas %}
+            <li>
+                <h2>Cata del {{ cata.fecha }}</h2>
+                <p><strong>Cliente:</strong> {{ cata.usuario.nombre }} {{ cata.usuario.apellido }}</p>
+
+                <h3>Vinos seleccionados:</h3>
+                <ul>
+                    {% for vino in cata.vinos.all %}
+                        <li>{{ vino.nombre }} - {{ vino.tipo }} - Sabor: {{ vino.sabor }} - ABV: {{ vino.abv }}</li>
+                    {% endfor %}
+                </ul>
+
+                {% if cata.comentarios %}
+                    <h4>Comentarios adicionales:</h4>
+                    <p>{{ cata.comentarios }}</p>
+                {% endif %}
+
+                Opción para eliminar la cata
+                <form action="{% url 'EliminarCata' cata.id %}" method="post"> {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Eliminar esta cata</button>
+                </form>
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No hay catas agendadas.</p>
+    {% endif %}
+
+{% endblock %}

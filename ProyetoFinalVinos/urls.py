@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from django.shortcuts import redirect 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('app_vinos/', include('app_vinos.urls')),
+    path('', lambda req: redirect('Inicio', permanent=False)),  # Redirige a la vista Inicio en /app_vinos/
 ]
 
 urlpatterns+= static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

@@ -1,42 +1,47 @@
 {% extends 'padre.html' %}
 
-
 {% block ContenidoQueCambia %}
 
-    <h1>Estos son nuestros Vinos:</h1>
+<h1>Estos son nuestros Vinos:</h1>
 
-    <ul>
+<div class="container">
+    <div class="row justify-content-center">
+        {% for vino in vinos %}
+            <div class="col-md-4 mb-4 d-flex justify-content-center">
+                <div class="card h-100" style="width: 18rem;">
+                    <!-- Mostrar la imagen del vino si existe, sino usar la imagen genérica -->
+                    <img src="{% if vino.imagen %}{{ vino.imagen.url }}{% else %}/media/images/botella.jpg{% endif %}" 
+                         class="card-img-top" alt="{{ vino.nombre }}" 
+                         style="height: 250px; object-fit: cover;">
+                         
+                    <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">{{ vino.tipo }}</h6>
+                        <h5 class="card-title">{{ vino.nombre }}</h5>
+                        <a href="{% url 'VinoDetalles' vino.id %}" class="btn btn-primary">Ver detalles</a>
+                    </div>
 
-        {% for vino in vinos  %}
-        <li>
-            <a href="{% url 'VinoDetalles' vino.id %}">
-                {{vino.nombre}}
-            </a>
-        </li>
-        
-        {% if user.is_staff %}
-
-        <div style="display: flex; column-gap: 5px;">
-            <button>
-                <a href="{% url 'VinoBorrar' vino.id %}">Eliminar</a>
-            </button>
-            <button>
-                <a href="{% url 'VinoEditar' vino.id %}">Editar</a>
-            </button>
-        </div>
-        
-        {% endif %}
-            
+                    {% if user.is_staff %}
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'VinoEditar' vino.id %}" class="btn btn-warning">Editar</a>
+                            <a href="{% url 'VinoBorrar' vino.id %}" class="btn btn-danger">Eliminar</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         {% endfor %}
+    </div>
+</div>
 
-    </ul>
-    
-    {% if user.is_staff %}
-    
-    <a href="{% url 'VinoCrear' %}">Carga Vino</a>
-        
-    {% endif %}
-        
-{% endblock ContenidoQueCambia %}
+{% if user.is_staff %}
+<div class="mt-4">
+    <a href="{% url 'VinoCrear' %}" class="btn btn-success">Agregar nuevo Vino</a>
+</div>
+{% endif %}
+
+{% endblock %}
+
+
 
     

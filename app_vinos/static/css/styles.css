@@ -383,7 +383,9 @@ button,
 [type=button],
 [type=reset],
 [type=submit] {
-  -webkit-appearance: button;
+  -webkit-appearance: button; /* Compatibilidad con WebKit (Chrome, Safari) */
+  -moz-appearance: button;    /* Compatibilidad con Firefox */
+  appearance: button;         /* Propiedad estándar */
 }
 button:not(:disabled),
 [type=button]:not(:disabled),
@@ -441,7 +443,9 @@ legend + * {
 
 [type=search] {
   outline-offset: -2px;
-  -webkit-appearance: textfield;
+  -webkit-appearance: button; /* Compatibilidad con WebKit (Chrome, Safari) */
+  -moz-appearance: button;    /* Compatibilidad con Firefox */
+  appearance: button;         /* Propiedad estándar */
 }
 
 /* rtl:raw:
@@ -462,7 +466,9 @@ legend + * {
 
 ::file-selector-button {
   font: inherit;
-  -webkit-appearance: button;
+  -webkit-appearance: button; /* Compatibilidad con WebKit (Chrome, Safari) */
+  -moz-appearance: button;    /* Compatibilidad con Firefox */
+  appearance: button;         /* Propiedad estándar */
 }
 
 output {
@@ -10838,14 +10844,15 @@ textarea.form-control-lg {
   font-size: 4.5rem;
 }
 
-header.masthead {
+/* header.masthead {
   position: relative;
   background-color: #343a40;
+  background: url("../assets/img/pexels-pixabay-290316.jpg") no-repeat center center;
   background: url("../assets/img/bg-masthead.jpg") no-repeat center center;
   background-size: cover;
   padding-top: 8rem;
   padding-bottom: 8rem;
-}
+} */
 header.masthead:before {
   content: "";
   position: absolute;
@@ -10894,14 +10901,14 @@ header.masthead h1, header.masthead .h1 {
   box-shadow: 0px 5px 5px 0px #adb5bd;
 }
 
-.call-to-action {
+/* .call-to-action {
   position: relative;
   background-color: #343a40;
   background: url("../assets/img/bg-masthead.jpg") no-repeat center center;
   background-size: cover;
   padding-top: 7rem;
   padding-bottom: 7rem;
-}
+} */
 .call-to-action:before {
   content: "";
   position: absolute;

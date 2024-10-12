@@ -2,3 +2,15 @@
     padding-right: 150px;
     margin-left: -150px;
 }
+
+.masthead {
+    background-image: url("{% static 'assets/img/pexels-pixabay-290316.jpg' %}");
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}

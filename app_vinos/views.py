@@ -15,7 +15,7 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import DeleteView, UpdateView, CreateView
 
 # Create your views here.
-@login_required
+#@login_required
 def inicio(req):
     try:
         # Obtener la última cata agendada por el usuario logueado
@@ -176,7 +176,7 @@ def mostrar_recomendaciones(req):
 
     return render(req, "recomendaciones.html", {})
 
-class VinoList(LoginRequiredMixin, ListView):
+class VinoList(ListView):
 
     model = Vino
     template_name = 'vino_list.html'
@@ -373,3 +373,24 @@ def vista_usuario(request, usuario_id):
         return HttpResponse("Este usuario es un administrador")
     elif usuario.es_cliente:
         return HttpResponse("Este usuario es un cliente")
+    
+def ver_todas_las_catas(req):
+
+    catas = Cata.objects.all()
+    return render(req, 'todas_las_catas.html', {'catas': catas})
+
+def eliminar_cata(req, cata_id):
+
+    cata = get_object_or_404(Cata, id=cata_id)
+    cata.delete()
+
+    return redirect('TodasLasCatas')
+
+def descriptivo_tipos_cata(req):
+    tipos_cata_descriptivo = [
+        {'tipo': 'Cata de Vinos Blancos', 'descripcion': 'Una cata especializada en vinos blancos, con diferentes tipos y sabores.'},
+        {'tipo': 'Cata Online', 'descripcion': 'Participa desde la comodidad de tu hogar, con una experiencia virtual guiada.'},
+        {'tipo': 'Cata para Empresas', 'descripcion': 'Catas organizadas para eventos de empresas y grupos grandes.'},
+    ]
+    
+    return render(req, 'descriptivo_tipos_cata.html', {'tipos_cata_descriptivo': tipos_cata_descriptivo})

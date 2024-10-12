@@ -62,7 +62,7 @@ class CataForm(forms.ModelForm):
     class Meta:
 
         model = Cata
-        fields = ['fecha', 'vinos', 'comentarios']
+        fields = ['fecha', 'vinos', 'tipo_de_cata', 'comentarios']
         widgets = {
             'fecha': forms.DateInput(attrs={'type': 'date'}),
             'vino': forms.CheckboxSelectMultiple(),

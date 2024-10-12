@@ -14,6 +14,8 @@
                     <li>{{ vino.nombre }} - {{ vino.tipo }} - Sabor: {{ vino.sabor }} - ABV: {{ vino.abv }}</li>
                 {% endfor %}
             </ul>
+            
+            <p><strong>Tipo de Cata:</strong> {{ cata.get_tipo_de_cata_display }}</p>
 
             {% if cata.comentarios %}
                 <h4>Comentarios adicionales:</h4>

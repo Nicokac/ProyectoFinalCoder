@@ -41,6 +41,7 @@ class Vino(models.Model):
     ph = models.DecimalField(max_digits=3, decimal_places=2, default=0.0, verbose_name='pH')
     ta = models.DecimalField(max_digits=4, decimal_places=2, default=0.0, verbose_name='Total Acidity (g/L)')
     rs = models.DecimalField(max_digits=4, decimal_places=2, default=0.0, verbose_name='Residual Sugar (g/L)')
+    imagen = models.ImageField(upload_to='vinos', blank=True, null=True)
 
     def __str__(self):
         return f'{self.nombre} {self.tipo} {self.sabor} {self.intensidad} {self.abv} {self.ph} {self.ta} {self.rs}' 
@@ -58,12 +59,20 @@ class Recomendacion(models.Model):
     comentario = models.TextField()
 
     def __str__(self):
-        return f'Recomendación para {self.usuario.nombre} - {self.vino.nombre}'
+        return f'Cata de {self.usuario} el {self.fecha} - Tipo: {self.get_tipo_de_cata_display()}'
     
 class Cata(models.Model):
+
+    tipo_cata = [('Blanco', 'Cata de Vinos Blancos'),
+                 ('Tinto', 'Cata de Vinos Tintos'),
+                 ('Online', 'Cata Online'),
+                 ('Empresa', 'Cata para empresas')
+                 ]
+
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha = models.DateField()
     vinos = models.ManyToManyField(Vino)
+    tipo_de_cata = models.CharField(max_length=20, choices=tipo_cata, default='Blanco')
     comentarios = models.TextField(blank=True)
 
     def __str__(self):

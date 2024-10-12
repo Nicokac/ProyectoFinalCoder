@@ -1,0 +1,14 @@
+{% extends 'padre.html' %}
+
+{% block ContenidoQueCambia %}
+    <h1>Tipos de Catas Disponibles</h1>
+
+    <ul>
+        {% for tipo in tipos_cata_descriptivo %}
+            <li>
+                <h2>{{ tipo.tipo }}</h2>
+                <p>{{ tipo.descripcion }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
